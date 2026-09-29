@@ -40,10 +40,13 @@ for (const b of BLOCKED) {
   }
 }
 
-// "Apex Fitness" -> brand "Apex", accent "Fitness"
+// "Apex Fitness" -> logo "Apex" + gold "Fitness"
+// "FitForge"     -> logo "FitForge" only. A one-word brand has no
+// second half, and rendering it twice reads as a bug.
 const words = newName.split(/\s+/).filter(Boolean);
 const brandWord = words[0];
-const accentWord = words.length > 1 ? words[words.length - 1] : words[0];
+const twoWords = words.length > 1;
+const accentWord = twoWords ? words[words.length - 1] : '';
 
 // UPI payee names are shown in a phone app; keep them short.
 const payee = newName.length <= 20 ? newName : words[0];
@@ -98,10 +101,19 @@ for (const rel of TARGETS) {
     .replace(/\bKailie\b(?!Fitness)/g, brandWord)
     .replace(/\bkailie\b(?!fitness)/g, slug);
 
-  // The logo markup: <span>Accent</span> after the brand word.
+  // The logo markup: <span>Accent</span> after the brand word. A
+  // one-word brand gets no span at all, so it never prints twice.
+  const logoHtml = twoWords
+    ? brandWord + '<span>' + accentWord + '</span>'
+    : brandWord;
   after = after.replace(
     new RegExp(brandWord + '<span>[^<]*</span>', 'g'),
-    brandWord + '<span>' + accentWord + '</span>'
+    logoHtml
+  );
+  // Also collapse an already-doubled wordmark from a previous run.
+  after = after.replace(
+    new RegExp(brandWord + brandWord, 'g'),
+    brandWord
   );
 
   if (rel === 'config.js') {

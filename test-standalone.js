@@ -101,6 +101,28 @@ setTimeout(() => {
   check('no borrowed brand name', /kailie/i.test(html), false);
   check('no placeholder brand left', html.includes('YOUR BRAND NAME'), false);
 
+  console.log('\n=== wordmark is not doubled ===');
+  // A one-word brand must not render as "FitForgeFitForge". This bug
+  // shipped once already, so it is checked explicitly.
+  {
+    const { JSDOM: JD } = require('jsdom');
+    const d2 = new JD(html).window.document;
+    const logos = [...d2.querySelectorAll('.logo')];
+    check('logo elements found', logos.length > 0, true);
+    for (const lg of logos) {
+      const txt = lg.textContent.replace(/\s+/g, '');
+      // Derive the brand from the page title rather than hardcoding it, so
+      // this still works after a rename.
+      const title = (d2.querySelector('title') || {}).textContent || '';
+      const brand = title.split('—')[0].trim();
+      check('wordmark "' + txt + '" not doubled',
+        txt === brand.replace(/\s+/g, ''), true);
+      check('wordmark has no empty gold span',
+        lg.querySelector('span') === null || lg.querySelector('span').textContent.length > 0,
+        true);
+    }
+  }
+
   console.log('\n=== post-purchase page is inside the single file ===');
   const tyUri = (w.KF_CONFIG && w.KF_CONFIG.thankYouUrl) || '';
   check('thankYouUrl is a data: doc', tyUri.startsWith('data:text/html'), true);

@@ -27,7 +27,8 @@ def read_brand():
     name = m.group(1) if m else "YOUR BRAND"
     parts = name.split()
     brand = parts[0]
-    accent = parts[-1] if len(parts) > 1 else parts[0]
+    # A one-word brand has no accent half — printing it twice looks broken.
+    accent = parts[-1] if len(parts) > 1 else ""
     return brand, accent, name
 
 
