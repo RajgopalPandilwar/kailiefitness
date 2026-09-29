@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>KailieFitness — Digital Training Programs</title>
-<meta name="description" content="Premium digital fitness programs from KailieFitness. Structured training, nutrition guidance and instant PDF access. Fat Loss, Muscle Building, At Home Training and Performance." />
+<meta name="description" content="Premium digital fitness programs from KailieFitness. Structured training, nutrition guidance and instant email delivery. Fat Loss, Muscle Building, At Home Training and Performance." />
 
 <!-- Fonts: Bebas Neue (condensed display) + Inter (body) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -594,7 +594,7 @@ h1,h2,h3,.display{
       <span class="eyebrow">Digital Training Programs</span>
       <h1>TRAIN WITH<span class="gold">INTENT.</span></h1>
       <p class="hero__lead">
-        Structured, coach-built programs you start the same minute you buy.
+        Structured, coach-built programs you can start the same day you buy.
         Every plan ships with progressive training blocks, nutrition guidance
         and lifetime PDF access — no subscriptions, no guesswork.
       </p>
@@ -606,7 +606,7 @@ h1,h2,h3,.display{
       <dl class="hero__meta">
         <div><dt>5</dt><dd>Programs</dd></div>
         <div><dt>8–16</dt><dd>Weeks Each</dd></div>
-        <div><dt>PDF</dt><dd>Instant Access</dd></div>
+        <div><dt>PDF</dt><dd>Emailed To You</dd></div>
         <div><dt>Lifetime</dt><dd>Access</dd></div>
       </dl>
     </div>
@@ -765,7 +765,7 @@ h1,h2,h3,.display{
           <span class="bundle__save">You save &#8377;4,797</span>
           <br />
           <a class="btn btn--block-lg" href="#" data-program="Complete Bundle">Buy The Bundle <span class="btn__arrow">&rarr;</span></a>
-          <p class="bundle__note">One payment. Lifetime access.<br>Delivered as instant PDF download.</p>
+          <p class="bundle__note">One payment. Lifetime access.<br>Download link sent to your email.</p>
         </div>
       </div>
     </div>
@@ -818,11 +818,11 @@ h1,h2,h3,.display{
               <path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 19h16"/>
             </svg>
           </div>
-          <h3>Instant PDF Access</h3>
+          <h3>Straight To Your Inbox</h3>
           <p>
-            Payment clears, your download link is live. Open it on phone, tablet
-            or laptop the same minute — no waiting for a physical booklet, no
-            shipping fee.
+            Pay by UPI, send your reference number, and your download link comes
+            straight to your email. No account to create, no dashboard to log into,
+            nothing to wait for.
           </p>
         </article>
 
@@ -883,7 +883,7 @@ h1,h2,h3,.display{
             How do I get the program after I pay?
             <span class="faq__icon" aria-hidden="true"></span>
           </button>
-          <div class="faq__a"><p>Instantly. As soon as your payment is confirmed you land on a download page and receive the PDF by email as well. Nothing is shipped physically, and there is no waiting period.</p></div>
+          <div class="faq__a"><p>You submit the 12-digit UPI reference number from your payment app on the checkout screen, which emails it to me. I confirm the payment has landed and reply with your download link — usually within a few hours, always within 24. Nothing is shipped physically.</p></div>
         </div>
         <div class="faq__item">
           <button class="faq__q" type="button" aria-expanded="false">
@@ -965,7 +965,7 @@ h1,h2,h3,.display{
 <!-- ============================ UPI CHECKOUT MODAL ============================ -->
 <div class="modal" id="upiModal" role="dialog" aria-modal="true" aria-labelledby="upiProgram" aria-hidden="true">
   <div class="modal__panel">
-    <button class="modal__close" type="button" data-close aria-label="Close payment">&times;</button>
+    <button class="modal__close" type="button" id="upiCloseBtn" data-close aria-label="Close payment">&times;</button>
 
     <span class="eyebrow">Pay via UPI</span>
     <h3 id="upiProgram">Program</h3>

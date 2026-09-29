@@ -12,7 +12,6 @@
   var payee = U.payeeName || 'KailieFitness';
   var enabled = !!(U.method === 'upi' || U.method === 'both') && !!upiId;
 
-  var QR_READY = false;
   var seq = 0;
 
   // ---- UPI intent link -----------------------------------------
@@ -68,13 +67,9 @@
     els = {
       program: $('upiProgram'), amount: $('upiAmount'),
       qr: $('upiQr'), vpa: $('upiVpa'),
-      open: $('upiOpenApp'), copy: $('upiCopy'), copyVpa: $('upiCopyVpa'),
-      form: $('upiRefForm'), input: $('upiRefInput'),
-      card: $('upiCardLink'), cardWrap: $('upiCardWrap')
+      open: $('upiOpenApp'), close: $('upiCloseBtn'), copyVpa: $('upiCopyVpa'),
+      form: $('upiRefForm'), input: $('upiRefInput')
     };
-
-    var url = new URLSearchParams(location.search).get('order');
-    if (url) location.replace(url);
 
     modal.addEventListener('click', function (e) {
       if (e.target === modal || e.target.closest('[data-close]')) close();
@@ -186,7 +181,6 @@
         correctLevel: QRCode.CorrectLevel.M
       });
       els.qr.classList.add('is-light');
-      QR_READY = true;
     } catch (err) {
       els.qr.innerHTML = '<p class="upi__qr-fallback">' +
         'QR unavailable — use the UPI ID above or the app button.</p>';

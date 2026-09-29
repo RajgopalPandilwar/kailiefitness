@@ -26,15 +26,7 @@ window.KF_CONFIG = {
     upiId: 'rajgopal.pandilwar@fam',
 
     // Name shown in the payer's UPI app. Keep it short.
-    payeeName: 'KailieFitness',
-
-    // Optional: second UPI ID for buyers whose app rejects the first.
-    // Leave empty to disable.
-    fallbackVpa: '',
-
-    // Optional: WhatsApp number for buyers who prefer to confirm by chat.
-    // Country code + number, digits only. Empty = disabled.
-    whatsapp: ''
+    payeeName: 'KailieFitness'
   },
 
   // ---- PRICES -----------------------------------------------------
