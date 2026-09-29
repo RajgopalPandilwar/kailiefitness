@@ -13,7 +13,7 @@
 
 window.KF_CONFIG = {
   // Where buyers reach you. Used by the help section and order receipts.
-  supportEmail: 'hello@kailiefitness.com',
+  supportEmail: 'pandilwarajgopal@gmail.com',
 
   // ---- PAYMENT METHOD --------------------------------------------
   // 'upi'  = UPI deep links + QR code only (recommended, zero cost)
@@ -23,7 +23,7 @@ window.KF_CONFIG = {
 
     // Your UPI ID. Find it in your bank or UPI app under your profile.
     // Examples: kailie@okhdfcbank, kailie@okaxis, yourname@oksbi
-    upiId: 'kailiefitness@okicici',
+    upiId: 'rajgopal.pandilwar@fam',
 
     // Name shown in the payer's UPI app. Keep it short.
     payeeName: 'KailieFitness',

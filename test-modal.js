@@ -34,6 +34,7 @@ check('KF_UPI exposed', typeof window.KF_UPI, 'object');
 check('UPI enabled', window.KF_UPI.enabled, true);
 
 const doc = window.document;
+const KF = window.KF_CONFIG;
 const modal = doc.getElementById('upiModal');
 check('modal in DOM', !!modal, true);
 check('starts hidden', modal.classList.contains('is-open'), false);
@@ -51,14 +52,14 @@ check('modal now open', modal.classList.contains('is-open'), true);
 check('aria-hidden cleared', modal.getAttribute('aria-hidden'), 'false');
 check('program name', doc.getElementById('upiProgram').textContent, 'Complete Bundle');
 check('amount shown', doc.getElementById('upiAmount').textContent, '₹5,999');
-check('VPA shown', doc.getElementById('upiVpa').textContent, 'kailiefitness@okicici');
+check('VPA shown', doc.getElementById('upiVpa').textContent, KF.payment.upiId);
 
 const openHref = doc.getElementById('upiOpenApp').getAttribute('href');
 console.log('\n' + openHref + '\n');
 const q = new URLSearchParams(openHref.split('?')[1]);
 check('app link scheme', openHref.split(':')[0], 'upi');
 check('app link amount', q.get('am'), '5999.00');
-check('app link payee VPA', q.get('pa'), 'kailiefitness@okicici');
+check('app link payee VPA', q.get('pa'), KF.payment.upiId);
 check('app link currency', q.get('cu'), 'INR');
 
 console.log('\n=== QR code ===');
