@@ -1,48 +1,99 @@
 # KailieFitness
 
-Landing page for KailieFitness digital training programs.
+Landing page + UPI checkout for KailieFitness digital training programs.
 
 **Live:** https://rajgopalpandilwar.github.io/kailiefitness/
 **Repo:** https://github.com/RajgopalPandilwar/kailiefitness
+
+## Cost
+
+| Thing | Cost |
+| --- | --- |
+| Hosting (GitHub Pages) | Free, no card, no expiry |
+| Payment collection (UPI) | Free — P2M transfers carry no fee |
+| Delivery (email the PDF) | Free |
+
+**Truly ₹0 to run.** The one real cost is your time: confirming each payment
+and emailing the file, by hand.
 
 ## Files
 
 | File | Purpose |
 | --- | --- |
 | `index.html` | The page. Markup + all CSS inline. |
-| `config.js` | **The only file you edit.** Payment links, prices, support email. |
-| `checkout.js` | Wires every `Buy Now` button to its link. Handles nav, FAQ, toast. |
-| `thank-you.html` | Post-payment page buyers land on. |
+| `config.js` | **The only file you edit.** UPI ID, prices, contact email. |
+| `upi.js` | Builds `upi://` links, draws the QR, handles the modal. |
+| `checkout.js` | Wires Buy Now buttons, nav, FAQ, toasts. |
+| `thank-you.html` | Post-purchase page. |
+| `test-amounts.js` | Price-parsing tests. |
+| `test-modal.js` | DOM tests for the checkout modal. |
 
-No build step, no dependencies, no server. Push a change and it's live in ~30s.
+## Go live
 
-## Go live in 5 minutes
+1. **Set your UPI ID** in `config.js` → `payment.upiId`. Find it in your bank
+   or UPI app under your profile. That's the only required step.
+2. **Check the prices** in `config.js` — they must match `index.html`. The
+   bundle "value" is the sum of the four solo prices.
+3. **Push.** `git add -A && git commit -m "live" && git push`. Live in ~30s.
 
-1. **Create a free Razorpay account** — <https://razorpay.com>. India-only KYC,
-   no monthly fee, ~2% per transaction. Handles UPI, cards and netbanking.
-2. **Create a payment link per program** — Razorpay dashboard →
-   *Payments → Payment Links → Create Link*. Set the amount, description and
-   "What happens after payment" → redirect to `thank-you.html`.
-3. **Paste the links into `config.js`** — one URL per program.
-4. **Set `READY: true`** in `config.js`.
-5. **Push** — `git add -A && git commit -m "live" && git push`.
-6. **Put the download on `thank-you.html`** — replace the dashed
-   `OWNER ACTION REQUIRED` box with your real PDF link.
+There is no merchant account, no KYC, no gateway signup.
 
-While `READY` is `false`, Buy Now buttons show a "not configured" toast rather
-than silently doing nothing, so you never take a payment you can't deliver.
+## How payment works
 
-## Editing prices or content
+Clicking **Buy Now** opens a modal with three ways to pay:
+
+- **QR code** — works everywhere, including iPhone (scan with the Camera app)
+- **Open UPI App** — `upi://` deep link, opens Google Pay / PhonePe / Paytm
+  directly on Android
+- **Your UPI ID** — copy it and pay in any app manually
+
+The link is pre-filled with the program name, the amount, and a traceable
+reference (`tr`) that shows in your bank statement, so you can match an order
+to a buyer.
+
+### Delivery is manual — read this
+
+A static HTML page **cannot verify that a payment arrived**. There is no server,
+so nothing on this site can check your bank account. Payment confirmation is on
+you.
+
+The modal handles this by asking the buyer to submit their UPI reference
+number, which opens a pre-filled email to you. You then:
+
+1. Check the amount landed in your bank app.
+2. Email the buyer the download link.
+
+That is the whole flow. It is fine for a handful of orders a day. If volume
+grows, move to a payment gateway with a webhook (Razorpay, ~2% per txn) and
+delivery can be automated.
+
+## Tests
+
+```
+npm install --no-save jsdom qrcodejs
+node test-amounts.js   # 23 checks — price parsing, bundle math, link shape
+node test-modal.js     # 36 checks — modal open/populate/QR, all 5 buttons
+```
+
+Both exit non-zero on failure. `test-amounts.js` runs in plain Node;
+`test-modal.js` needs jsdom.
+
+## Editing prices
 
 Prices live in two places that must agree: the `price` / `was` fields in
 `config.js`, and the `.price__now` / `.price__was` spans in `index.html`. The
 bundle's "value" figure is the sum of the four solo prices — currently
 2,499 + 3,499 + 1,899 + 2,899 = 10,796, minus 5,999 = **4,797 saved**.
 
+`cleanAmount()` in `upi.js` normalises whatever you type (`₹2,499`, `Rs. 2499`,
+`2499.50`) into the bare decimal the UPI spec requires, and rejects anything
+that isn't a usable number so a typo can't turn into a wrong charge.
+
 ## Hosting
 
 GitHub Pages on the free plan: no bandwidth cap that matters at this scale, no
-card required, no expiry. It stays up as long as the repo does.
+card required, no expiry. It stays up as long as the repo does. Custom domain:
+add a CNAME file.
 
 ## Design system
 

@@ -6,7 +6,9 @@
 (function () {
   'use strict';
 
-  var CFG = window.KF_CONFIG || { programs: {}, READY: false };
+  var CFG = window.KF_CONFIG || {};
+  var PROGRAMS = CFG.programs || {};
+  var UPI = window.KF_UPI;
 
   // ---- Toast -----------------------------------------------------
   var toast = document.createElement('div');
@@ -18,7 +20,7 @@
     'padding:16px 24px', 'font:600 12px/1.4 Inter,system-ui,sans-serif',
     'letter-spacing:.14em', 'text-transform:uppercase', 'max-width:calc(100vw - 40px)',
     'text-align:center', 'opacity:0', 'pointer-events:none',
-    'transition:opacity .2s ease, transform .2s ease', 'z-index:999'
+    'transition:opacity .2s ease, transform .2s ease', 'z-index:1100'
   ].join(';');
   document.body.appendChild(toast);
 
@@ -33,24 +35,34 @@
       toast.style.transform = 'translateX(-50%) translateY(20px)';
     }, 3600);
   }
+  window.KFToast = showToast;
 
-  // ---- Wire the buttons -----------------------------------------
-  var buttons = document.querySelectorAll('[data-program]');
-  Array.prototype.forEach.call(buttons, function (btn) {
+  // ---- Buy Now buttons -------------------------------------------
+  Array.prototype.forEach.call(document.querySelectorAll('[data-program]'), function (btn) {
     var name = btn.getAttribute('data-program');
-    var entry = CFG.programs && CFG.programs[name];
+    var entry = PROGRAMS[name];
+    if (!entry) return;
 
-    if (!entry || !entry.link) {
-      btn.addEventListener('click', function (e) {
-        e.preventDefault();
-        showToast('Checkout not configured yet — add your payment link in config.js');
-      });
-      return;
+    var price = entry.price;
+
+    // The page renders a price beside every button; fall back to that
+    // only if config is missing, so a typo can never blank it.
+    if (!price) {
+      var near = btn.parentElement && btn.parentElement.querySelector('.price__now');
+      price = near ? near.textContent.trim() : '';
     }
 
-    btn.setAttribute('href', entry.link);
-    btn.setAttribute('rel', 'noopener');
-    btn.setAttribute('aria-label', 'Buy ' + name + ' for ' + entry.price);
+    btn.setAttribute('aria-label', 'Buy ' + name + ' for ' + price + ' via UPI');
+
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      if (!UPI || !UPI.enabled) {
+        showToast('Payment is not configured yet — add your UPI ID in config.js');
+        return;
+      }
+      UPI.open(name, price);
+    });
   });
 
   // ---- Contact links use the configured support address ----------

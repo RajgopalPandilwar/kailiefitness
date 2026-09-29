@@ -423,6 +423,89 @@ h1,h2,h3,.display{
 }
 
 /* ============================================================
+   UPI CHECKOUT MODAL
+   ============================================================ */
+.modal{
+  position:fixed; inset:0; z-index:1000;
+  display:none; align-items:center; justify-content:center;
+  padding:24px;
+  background:rgba(0,0,0,.86);
+  backdrop-filter:blur(6px);
+  overflow-y:auto;
+}
+.modal.is-open{ display:flex; }
+.modal__panel{
+  position:relative; width:100%; max-width:520px;
+  background:var(--black); border:1px solid var(--gold);
+  padding:40px 36px 36px;
+  animation:modalIn .22s ease both;
+}
+@keyframes modalIn{ from{ opacity:0; transform:translateY(12px);} to{ opacity:1; transform:none;} }
+.modal__close{
+  position:absolute; top:0; right:0;
+  width:52px; height:52px; background:none; border:0; cursor:pointer;
+  color:var(--text-muted); font-size:22px; line-height:52px; text-align:center;
+  transition:color .18s ease;
+}
+.modal__close:hover{ color:var(--gold); }
+.modal h3{ font-size:34px; margin:12px 0 4px; }
+.modal__amount{
+  font-family:var(--font-display); font-size:56px; line-height:1;
+  color:var(--gold); margin-bottom:28px;
+}
+.modal__amount s{
+  font-family:var(--font-body); font-size:15px; color:var(--text-dim);
+  margin-left:12px; letter-spacing:0; text-transform:none;
+}
+.upi__qr{
+  display:flex; align-items:center; justify-content:center;
+  min-height:208px; padding:10px; margin-bottom:22px;
+  background:#F4F2EE; border:1px solid var(--line);
+}
+.upi__qr canvas,.upi__qr img{ display:block; }
+.upi__qr-fallback{
+  color:#0A0A0A; font-size:13px; text-align:center; padding:20px; line-height:1.6;
+}
+.upi__label{
+  font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--text-dim); margin-bottom:8px;
+}
+.upi__vpa{
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  border:1px solid var(--line); padding:16px 18px; margin-bottom:20px;
+}
+.upi__vpa code{
+  font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:16px; color:var(--gold); word-break:break-all; flex:1; min-width:180px;
+}
+.copy{
+  background:none; border:1px solid var(--line); color:var(--text-muted);
+  font-size:10px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  padding:9px 14px; cursor:pointer; transition:color .18s ease,border-color .18s ease;
+}
+.copy:hover{ color:var(--gold); border-color:var(--gold); }
+.upi__hint{ font-size:13px; color:var(--text-dim); line-height:1.6; margin-bottom:28px; }
+.upi__hint strong{ color:var(--text); font-weight:600; }
+.upi__ref{ border-top:1px solid var(--line-soft); padding-top:24px; }
+.upi__ref label{
+  display:block; font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--text-dim); margin-bottom:10px;
+}
+.upi__ref input{
+  width:100%; background:var(--surface); color:var(--text);
+  border:1px solid var(--line); border-radius:0; padding:16px;
+  font-family:ui-monospace,Menlo,Consolas,monospace; font-size:15px;
+  margin-bottom:14px;
+}
+.upi__ref input::placeholder{ color:var(--text-dim); font-family:var(--font-body); }
+.modal__sent{
+  border:1px solid var(--gold); background:var(--gold-wash);
+  padding:20px; font-size:14px; color:var(--text); line-height:1.65;
+}
+.modal__sent strong{ display:block; color:var(--gold);
+  font-size:11px; letter-spacing:.18em; text-transform:uppercase; margin-bottom:8px; }
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (max-width:1024px){
@@ -879,7 +962,53 @@ h1,h2,h3,.display{
   </div>
 </footer>
 
+<!-- ============================ UPI CHECKOUT MODAL ============================ -->
+<div class="modal" id="upiModal" role="dialog" aria-modal="true" aria-labelledby="upiProgram" aria-hidden="true">
+  <div class="modal__panel">
+    <button class="modal__close" type="button" data-close aria-label="Close payment">&times;</button>
+
+    <span class="eyebrow">Pay via UPI</span>
+    <h3 id="upiProgram">Program</h3>
+    <p class="modal__amount"><span id="upiAmount">₹0</span><s>one-time</s></p>
+
+    <div class="upi__qr" id="upiQr" role="img" aria-label="QR code to scan and pay with any UPI app"></div>
+
+    <p class="upi__label">Or pay using your UPI ID</p>
+    <div class="upi__vpa">
+      <code id="upiVpa">—</code>
+      <button class="copy" type="button" id="upiCopyVpa">Copy</button>
+    </div>
+
+    <a class="btn" id="upiOpenApp" href="#" rel="noopener">
+      Open UPI App <span class="btn__arrow">&rarr;</span>
+    </a>
+
+    <p class="upi__hint" style="margin-top:16px">
+      <strong>iPhone?</strong> Scan the QR code with your Camera app instead of
+      the button above. On Android, tapping the button opens Google Pay,
+      PhonePe or Paytm directly.
+    </p>
+
+    <div class="upi__ref">
+      <label for="upiRefInput">Already paid? Send your UPI reference number</label>
+      <form id="upiRefForm" novalidate>
+        <input id="upiRefInput" type="text" inputmode="numeric" autocomplete="off"
+               placeholder="e.g. 428193756201" />
+        <button class="btn btn--secondary btn--sm" type="submit">Send Reference &amp; Get My Program</button>
+      </form>
+      <div class="modal__sent" id="upiSent" hidden>
+        <strong>Almost done</strong>
+        Your email client is opening with the reference number filled in.
+        Press send and you'll get your download link once the payment is
+        confirmed — usually within a few hours.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="config.js"></script>
+<script src="upi.js"></script>
 <script src="checkout.js"></script>
 
 </body>
