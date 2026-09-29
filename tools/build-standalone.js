@@ -1,6 +1,6 @@
 /* Build a standalone, offline-capable copy of the site.
    Run: node tools/build-standalone.js
-   Output: dist/kailiefitness-standalone.html
+   Output: dist/fitforge-standalone.html
 
    Everything — CSS, JS, the QR library, fonts (as base64), the share
    image — is inlined into one file. Open it with no internet, no server
@@ -12,7 +12,7 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
-const OUT = path.join(DIST, 'kailiefitness-standalone.html');
+const OUT = path.join(DIST, 'fitforge-standalone.html');
 const TMP = process.env.TMPDIR || '/tmp';
 
 function read(p) { return fs.readFileSync(path.join(ROOT, p), 'utf8'); }

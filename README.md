@@ -1,9 +1,9 @@
-# KailieFitness
+# FitForge
 
-Landing page + UPI checkout for KailieFitness digital training programs.
+Landing page + UPI checkout for FitForge digital training programs.
 
-**Live:** https://rajgopalpandilwar.github.io/kailiefitness/
-**Repo:** https://github.com/RajgopalPandilwar/kailiefitness
+**Live:** https://rajgopalpandilwar.github.io/fitforge/
+**Repo:** https://github.com/RajgopalPandilwar/fitforge
 
 ## Cost
 
@@ -97,7 +97,7 @@ add a CNAME file.
 
 ## Design system
 
-Tokens follow the spec at <https://gitreverse.com/designs/kailiefitness-com>:
+Tokens follow the spec at <https://gitreverse.com/designs/fitforge-com>:
 
 - `#CBAD62` gold accent · `#0A0A0A` jet black · `#9CA3AF` muted links
 - Bebas Neue headings (96px hero, 60px sections) · Inter body (20px)

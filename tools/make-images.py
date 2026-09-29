@@ -19,11 +19,24 @@ BE = os.path.join(TMP, "bebas.ttf")
 IN = os.path.join(TMP, "inter.ttf")
 
 
+def read_brand():
+    """Brand name comes from config.js so the images never go stale."""
+    src = (os.path.join(ROOT, "config.js"))
+    import re
+    m = re.search(r"name:\s*'([^']+)'", open(src, encoding="utf-8").read())
+    name = m.group(1) if m else "YOUR BRAND"
+    parts = name.split()
+    brand = parts[0]
+    accent = parts[-1] if len(parts) > 1 else parts[0]
+    return brand, accent, name
+
+
 def font(path, size):
     return ImageFont.truetype(path, size)
 
 
 def og_image():
+    brand, accent, full = read_brand()
     W, H = 1200, 630
     img = Image.new("RGB", (W, H), BLACK)
     d = ImageDraw.Draw(img)
@@ -64,9 +77,9 @@ def og_image():
 
     # Bottom rule + wordmark
     d.rectangle([M, H - 108, W - M, H - 106], fill=(38, 38, 38))
-    d.text((M, H - 88), "Kailie", font=font(BE, 44), fill=WHITE)
-    wm = d.textlength("Kailie", font=font(BE, 44))
-    d.text((M + wm, H - 88), "Fitness", font=font(BE, 44), fill=GOLD)
+    d.text((M, H - 88), brand, font=font(BE, 44), fill=WHITE)
+    wm = d.textlength(brand, font=font(BE, 44))
+    d.text((M + wm, H - 88), accent, font=font(BE, 44), fill=GOLD)
 
     out = os.path.join(ROOT, "og-image.png")
     img.save(out, "PNG", optimize=True)
@@ -74,11 +87,12 @@ def og_image():
 
 
 def favicon():
+    brand, accent, full = read_brand()
     S = 512
     img = Image.new("RGBA", (S, S), BLACK)
     d = ImageDraw.Draw(img)
     d.rectangle([0, 0, S - 1, S - 1], outline=GOLD, width=14)
-    d.text((0, 96), "K", font=font(BE, 340), fill=GOLD, anchor="ma")
+    d.text((0, 96), brand[0].upper(), font=font(BE, 340), fill=GOLD, anchor="ma")
     png = os.path.join(ROOT, "favicon.png")
     img.save(png, "PNG", optimize=True)
     img.resize((256, 256), Image.LANCZOS).save(

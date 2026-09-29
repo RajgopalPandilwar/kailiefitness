@@ -1,17 +1,28 @@
 /* ============================================================
-   KAILIEFITNESS — CHECKOUT CONFIG
+   CHECKOUT CONFIG
    ------------------------------------------------------------
    This is the ONLY file you need to edit to go live.
 
-   STEP 1 — Set your UPI ID below. That's it. UPI needs no
-            merchant account, no KYC and no monthly fee.
-   STEP 2 — Put your PDFs somewhere reachable and send the
-            download link when a buyer sends their reference.
+   STEP 1 — Set your BRAND NAME below. It replaces the name
+            everywhere on the site (header, footer, titles,
+            QR payee, social share image) via tools/set-brand.js.
+   STEP 2 — Set your UPI ID. UPI needs no merchant account,
+            no KYC and no monthly fee.
 
    Everything else on the site reads from this file.
    ============================================================ */
 
 window.KF_CONFIG = {
+  // ---- BRAND ------------------------------------------------------
+  // Your business name. Do NOT reuse an existing fitness brand's
+  // name — 'FitForge' belongs to fitforge.com, an
+  // established coaching business, and is not yours to use.
+  brand: {
+    name: 'FitForge',
+    // Optional: word shown in the logo after the accent colour.
+    // Defaults to whatever follows the space in `name`.
+  },
+
   // Where buyers reach you. Used by the help section and order receipts.
   supportEmail: 'pandilwarajgopal@gmail.com',
 
@@ -22,11 +33,12 @@ window.KF_CONFIG = {
     method: 'upi',
 
     // Your UPI ID. Find it in your bank or UPI app under your profile.
-    // Examples: kailie@okhdfcbank, kailie@okaxis, yourname@oksbi
+    // Examples: yourname@okhdfcbank, yourname@okaxis, yourname@oksbi
     upiId: 'rajgopal.pandilwar@fam',
 
-    // Name shown in the payer's UPI app. Keep it short.
-    payeeName: 'KailieFitness'
+    // Name shown in the payer's UPI app. Set by set-brand.js to your
+    // brand name, truncated if long.
+    payeeName: 'FitForge'
   },
 
   // ---- PRICES -----------------------------------------------------
