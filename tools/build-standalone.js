@@ -12,8 +12,17 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
-const OUT = path.join(DIST, 'fitforge-standalone.html');
 const TMP = process.env.TMPDIR || '/tmp';
+
+// Name the file after the brand, so it never ships saying "FitForge"
+// when the brand is something else.
+function brandSlug() {
+  const cfg = fs.readFileSync(path.join(ROOT, 'config.js'), 'utf8');
+  const m = cfg.match(/name:\s*'([^']+)'/);
+  const name = (m && m[1]) || 'standalone';
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+let OUT = path.join(DIST, 'standalone.html');
 
 function read(p) { return fs.readFileSync(path.join(ROOT, p), 'utf8'); }
 
@@ -52,9 +61,45 @@ html = html.split('og-image.png').join('data:image/png;base64,' + ogB64);
 // Favicon too, so the tab icon works offline.
 const favB64 = b64(path.join(ROOT, 'favicon.png'));
 html = html.replace(
+  /<link rel="icon" href="favicon\.ico" sizes="any" \/>/,
+  '<link rel="icon" href="data:image/png;base64,' + favB64 + '" type="image/png" />'
+);
+html = html.replace(
   /<link rel="icon" href="favicon\.png" type="image\/png" \/>/,
   '<link rel="icon" href="data:image/png;base64,' + favB64 + '" type="image/png" />'
 );
+html = html.replace(
+  /<link rel="apple-touch-icon" href="favicon\.png" \/>/,
+  '<link rel="apple-touch-icon" href="data:image/png;base64,' + favB64 + '" />'
+);
+
+// The post-purchase page is a separate file on the hosted site. In a
+// single-file copy it would 404, so inline it as a data: document the
+// buyer can open in a new tab.
+if (fs.existsSync(path.join(ROOT, 'thank-you.html'))) {
+  let ty = fs.readFileSync(path.join(ROOT, 'thank-you.html'), 'utf8');
+  // Recurse: the thank-you page also inlines the favicon and config.
+  ty = ty
+    .replace(/<link rel="icon" href="favicon\.ico" sizes="any" \/>/, '')
+    .replace(/<link rel="icon" href="favicon\.png" type="image\/png" \/>/,
+      '<link rel="icon" href="data:image/png;base64,' + favB64 + '" type="image/png" />');
+  ty = ty.replace(
+    /<script src="config\.js"><\/script>/,
+    '<script>/* config.js */\n' + read('config.js') + '\n</script>'
+  );
+
+  // "Back to Programs" must not point at index.html — that file does not
+  // exist next to a one-file copy. Send them to the online site instead,
+  // which is where a real buyer's link lives anyway.
+  ty = ty.split('href="index.html"').join(
+    'href="https://rajgopalpandilwar.github.io/kailiefitness/"'
+  );
+
+  // Wrap in a data URI that a browser will open as a document.
+  const tyUri = 'data:text/html;charset=utf-8;base64,' +
+    Buffer.from(ty, 'utf8').toString('base64');
+  html = html.split("'thank-you.html'").join("'" + tyUri + "'");
+}
 
 // ---- 3. Embed the fonts as base64 --------------------------------
 // The standalone copy must look identical offline, so the woff2 files
@@ -114,13 +159,36 @@ if (/<script src="/.test(html)) {
 }
 if (html.includes('cdn.jsdelivr.net')) problems.push('still references the CDN');
 if (html.includes('href="config.js"')) problems.push('still references config.js');
+if (html.includes("'thank-you.html'")) problems.push('thank-you.html not inlined');
 if (!html.includes('rajgopal.pandilwar@fam')) problems.push('UPI ID missing');
 if (!html.includes('QRCode')) problems.push('QR library missing');
+
+// Any remaining reference to a sibling file would 404 in a one-file
+// copy, which is the whole point of this build.
+const dangling = [...new Set(
+  [...html.matchAll(/(?:href|src)="([^"#][^"]*)"/g)].map(m => m[1])
+    .filter(u => !u.startsWith('http') && !u.startsWith('mailto') && !u.startsWith('data:'))
+)];
+if (dangling.length) {
+  problems.push('references sibling files that will not exist: ' + dangling.join(', '));
+}
+if (/kailie/i.test(html)) problems.push('borrowed brand name still present');
 
 if (problems.length) {
   console.error('BUILD FAILED:');
   for (const p of problems) console.error('  - ' + p);
   process.exit(1);
+}
+
+OUT = path.join(DIST, brandSlug() + '-standalone.html');
+
+// Remove the previous build so dist never holds a stale copy under an
+// old brand name.
+for (const f of fs.readdirSync(DIST)) {
+  if (f.endsWith('-standalone.html') && path.join(DIST, f) !== OUT) {
+    fs.unlinkSync(path.join(DIST, f));
+    console.log('removed stale build: ' + f);
+  }
 }
 
 fs.mkdirSync(DIST, { recursive: true });
