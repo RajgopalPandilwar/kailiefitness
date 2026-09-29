@@ -37,6 +37,52 @@
   }
   window.KFToast = showToast;
 
+  // ---- Render prices from config (single source of truth) ---------
+  // The markup ships with sensible defaults so the page still looks
+  // right with JS off or before config.js loads. These writes make
+  // config.js authoritative, so editing a price there is enough.
+  function renderPrices() {
+    var cards = document.querySelectorAll('.card, .bundle__buy');
+
+    Array.prototype.forEach.call(cards, function (card) {
+      var btn = card.querySelector('[data-program]');
+      if (!btn) return;
+      var entry = PROGRAMS[btn.getAttribute('data-program')];
+      if (!entry) return;
+
+      var now = card.querySelector('.price__now, .bundle__now');
+      if (now && entry.price) now.textContent = entry.price;
+
+      var was = card.querySelector('.price__was, .bundle__was');
+      if (was && entry.was) {
+        was.textContent = card.classList.contains('bundle__buy')
+          ? entry.was + ' value'
+          : entry.was;
+      }
+    });
+
+    // Bundle savings are derived, never hand-typed — they cannot drift
+    // out of sync with the solo prices.
+    var bundle = PROGRAMS['Complete Bundle'];
+    if (bundle && bundle.price) {
+      var solo = 0;
+      Object.keys(PROGRAMS).forEach(function (name) {
+        if (name === 'Complete Bundle') return;
+        var v = (PROGRAMS[name].price || '').replace(/[^\d.]/g, '');
+        if (v) solo += parseFloat(v);
+      });
+      var bundleVal = parseFloat(bundle.price.replace(/[^\d.]/g, ''));
+      var save = solo - bundleVal;
+
+      var wasEl = document.querySelector('.bundle__was');
+      var saveEl = document.querySelector('.bundle__save');
+      if (wasEl && save > 0) wasEl.textContent = '₹' + solo.toLocaleString('en-IN') + ' value';
+      if (saveEl && save > 0) saveEl.textContent = 'You save ₹' + save.toLocaleString('en-IN');
+    }
+  }
+
+  if (Object.keys(PROGRAMS).length) renderPrices();
+
   // ---- Buy Now buttons -------------------------------------------
   Array.prototype.forEach.call(document.querySelectorAll('[data-program]'), function (btn) {
     var name = btn.getAttribute('data-program');

@@ -30,8 +30,14 @@ window.KF_CONFIG = {
   },
 
   // ---- PRICES -----------------------------------------------------
-  // `price` is what the page shows AND what goes into the UPI payment
-  // request, so it must match the card prices in index.html.
+  // THE ONLY PLACE PRICES ARE SET. This file drives the cards, the UPI
+  // payment amounts and the bundle savings figure — changing a price
+  // here updates all of them. (The HTML also carries a copy so the page
+  // still looks right if JS is off; JS overwrites it on load.)
+  //
+  // Note: the Product price in the JSON-LD block in index.html is a
+  // separate static value for search engines. If you change the bundle
+  // price, update that "price" field too.
   //
   // A static page cannot verify that a payment landed — there is no
   // server. Delivery is manual: the buyer sends their UPI reference
