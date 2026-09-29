@@ -10,9 +10,9 @@ const config = fs.readFileSync(path.join(dir, 'config.js'), 'utf8');
 const upi = fs.readFileSync(path.join(dir, 'upi.js'), 'utf8');
 const checkout = fs.readFileSync(path.join(dir, 'checkout.js'), 'utf8');
 
-// qrcodejs is a CDN script; load the real implementation from the local
-// copy jsdom would fetch so the QR path is genuinely exercised.
-const qrPath = path.join(dir, 'node_modules', 'qrcodejs', 'qrcode.js');
+// qrcodejs is vendored at the site root, so load the real shipped file
+// rather than a node_modules copy — this tests what users actually get.
+const qrPath = path.join(dir, 'qrcode.min.js');
 
 const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'https://example.com/' });
 const { window } = dom;
@@ -83,7 +83,8 @@ if (fs.existsSync(qrPath)) {
       rendered[0].children.length + ' cells');
   }
 } else {
-  console.log('SKIP  qrcodejs not installed locally');
+  console.log('FAIL  vendored qrcode.min.js missing — QR would not render');
+  fail++;
 }
 
 console.log('\n=== close ===');

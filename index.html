@@ -1152,7 +1152,10 @@ h1,h2,h3,.display{
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<!-- QR library vendored locally — the checkout must not depend on a
+     third-party CDN staying up. Falls back to a text notice if it
+     fails to load, so the UPI ID and app button still work. -->
+<script src="qrcode.min.js"></script>
 <script src="config.js"></script>
 <script src="upi.js"></script>
 <script src="checkout.js"></script>
